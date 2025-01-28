@@ -1,0 +1,138 @@
+#include<stdio.h>  /* utilisation des entrees-sorties standard de C */
+#include<stdlib.h> /* utilisation des fonctions malloc et free */
+#include <stdbool.h>
+#include "contour.h"
+
+
+void ecrire_pixel(Pixel p){
+    if (p==0){
+        printf("_");
+    }else if (p==1){
+        printf("N");
+    }
+}
+
+void ecrire_orientation(Orientation o){
+    switch (o){
+        case Nord :
+            printf("Nord \n");
+            break;
+        case Est :
+            printf("Est \n");
+            break;
+        case Sud :
+            printf("Est \n");
+            break;
+        case Ouest :
+            printf("Ouest \n");
+            break;
+        default : 
+            printf("Erreur, verifier orientation. \n");
+            break;
+    }
+}
+
+Point trouver_pixel_depart(Image I){
+    UINT H = hauteur_image(I);
+	UINT L = largeur_image(I);
+    
+	for (UINT i = 1; i <= H; i++){
+        for (UINT j = 1; j <= L; j++){
+            
+			Pixel pix = get_pixel_image(I, j, i);
+            if (pix == NOIR) {
+                return set_point(i,j);
+            }
+        }
+    }
+    return set_point(-1,-1);
+}
+
+void memoriser_position(Point pos){
+    printf("(%.2lf , %.2lf)", pos.x,pos.y);
+}
+
+Point avancer(Point p, Orientation o, int k){
+    Point nv_p; 
+    switch (o){
+        case Nord : 
+            nv_p = set_point(p.x,p.y - k);
+            break;
+        case Est :
+            nv_p = set_point(p.x + k,p.y);
+            break;   
+        case Sud : 
+            nv_p = set_point(p.x,p.y + k);
+            break;
+        case Ouest : 
+            nv_p = set_point(p.x - k, p.y);
+            break;
+    }
+    return nv_p;
+}
+
+Orientation tourner_robot(Orientation o, int deg) {
+    int x = 0;
+    if (deg == 90) {
+        x= -1;
+    }
+    else if (deg == 270) {
+        x = 1;
+    }
+
+    switch (o+x) {
+    case 4:
+        return 0;
+        break;
+    case -1:
+        return 3;
+        break;
+    default:
+        return (o+x);
+        break;
+    }
+}
+
+
+Orientation nouvelle_orientation(Image I, Point p, Orientation o){
+    Pixel pG , pD ; 
+    pG = get_pixel_image (I, p.x, p.y );
+    pD = get_pixel_image (I, p.x + 1 , p.y);
+    if (pG == NOIR){
+        return tourner_robot(o, 90);
+    }else if ( pD == BLANC){
+        return tourner_robot(o, 270);
+    }else{
+        return o;
+    }
+}
+
+int main(int argc, char *argv[]){
+    Point P, pos;
+    double x0, y0 ;
+    Image I;
+    P = trouver_pixel_depart (I);
+
+    
+    x0 = P.x - 1 ;
+    y0 = P.y - 1;
+    pos = set_point(x0,y0);
+
+    Orientation O = Est ; 
+    
+    bool boucle = true ;
+
+    printf("contour de l'image: \n");
+    
+    while (boucle){
+        memoriser_position (pos);
+        pos = avancer(pos,O,1);
+        O = nouvelle_orientation(I,pos,O);
+
+        if(pos.x == x0 && pos.y == y0 && O == Est){
+            boucle = false;
+        }
+    }
+    memoriser_position(pos);
+
+}
