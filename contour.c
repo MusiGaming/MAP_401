@@ -38,7 +38,6 @@ Point trouver_pixel_depart(Image I){
     
 	for (UINT i = 1; i <= H; i++){
         for (UINT j = 1; j <= L; j++){
-            
 			Pixel pix = get_pixel_image(I, j, i);
             if (pix == NOIR) {
                 return set_point(j,i);
@@ -94,8 +93,30 @@ Orientation tourner_robot(Orientation o, int deg) {
 
 Orientation nouvelle_orientation(Image I, Point p, Orientation o){
     Pixel pG , pD ; 
-    pG = get_pixel_image (I, p.x, p.y );
-    pD = get_pixel_image (I, p.x + 1 , p.y);
+
+    switch (o) {
+    case Nord:
+        pD = get_pixel_image(I, p.x+1, p.y);
+        pG = get_pixel_image(I, p.x, p.y);
+        break;
+    case Est:
+        pD = get_pixel_image(I, p.x+1, p.y+1);
+        pG = get_pixel_image(I, p.x+1, p.y);
+        break;
+    case Sud:  
+        pD = get_pixel_image(I, p.x, p.y+1);
+        pG = get_pixel_image(I, p.x+1, p.y+1);
+        break;
+    case Ouest:
+        pD = get_pixel_image(I, p.x, p.y);
+        pG = get_pixel_image(I, p.x, p.y+1);
+        break;
+    default:
+        printf("Mauvaise orientation dans 'nouvelle Orientation'");
+        exit(0);
+        break;
+    }
+
     if (pG == NOIR){
         return tourner_robot(o, 90);
     }else if ( pD == BLANC){
