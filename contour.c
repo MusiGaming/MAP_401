@@ -41,7 +41,7 @@ Point trouver_pixel_depart(Image I){
             
 			Pixel pix = get_pixel_image(I, j, i);
             if (pix == NOIR) {
-                return set_point(i,j);
+                return set_point(j,i);
             }
         }
     }
@@ -105,12 +105,23 @@ Orientation nouvelle_orientation(Image I, Point p, Orientation o){
     }
 }
 
+void tests(Point P) {
+    printf("Case INITIIIIIIIIIIIAALE : (%.2lf , %.2lf) \n", P.x,P.y);
+}
+
 int main(int argc, char *argv[]){
+
+    if (argc>2) {
+        printf("Erreur nombre d'arguments");
+        exit(999);
+    }
+
     Point P, pos;
     double x0, y0 ;
     Image I = lire_fichier_image(argv[1]);
     P = trouver_pixel_depart(I);
 
+    tests(P);
     
     x0 = P.x - 1 ;
     y0 = P.y - 1;
@@ -132,5 +143,7 @@ int main(int argc, char *argv[]){
         }
     }
     memoriser_position(pos);
+    printf("\n");
 
 }
+
