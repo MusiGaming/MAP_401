@@ -47,10 +47,6 @@ Point trouver_pixel_depart(Image I){
     return set_point(-1,-1);
 }
 
-void memoriser_position(Point pos){
-    printf("(%.2lf , %.2lf)", pos.x,pos.y);
-}
-
 Point avancer(Point p, Orientation o, int k){
     switch (o){
         case Nord : 
@@ -130,6 +126,37 @@ void tests(Point P) {
     printf("Case INITIIIIIIIIIIIAALE : (%.2lf , %.2lf) \n", P.x,P.y);
 }
 
+void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
+    double x0 = P.x - 1, y0 = P.y - 1;
+    int i = 0;
+
+    pos = set_point(x0,y0);
+
+    FILE *file;
+    file = fopen("contour_ecriture.txt","w");
+    fprintf(file, "\n   ");
+
+    while (true){
+        i++;
+        fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+        pos = avancer(pos,O,1);
+        O = nouvelle_orientation(I,pos,O);
+
+        if(pos.x == x0 && pos.y == y0 && O == Est){
+            break;
+        }
+    }
+    fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+    rewind(file);
+    fprintf(file,"%d\n\n",i+1);
+
+    fclose(file);
+}
+
+void memoriser_position(FILE *file, Point pos){
+    fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+}
+
 int main(int argc, char *argv[]){
 
     if (argc>2) {
@@ -137,34 +164,18 @@ int main(int argc, char *argv[]){
         exit(999);
     }
 
-    Point P, pos;
-    double x0, y0 ;
+    Point P,pos;
     Image I = lire_fichier_image(argv[1]);
+    Orientation O = Est ; 
+    double x0 = P.x - 1, y0 = P.y - 1;
+
+    pos = set_point(x0,y0);
     P = trouver_pixel_depart(I);
 
     tests(P);
-    
-    x0 = P.x - 1 ;
-    y0 = P.y - 1;
-    pos = set_point(x0,y0);
-
-    Orientation O = Est ; 
-    
-    bool boucle = true ;
 
     printf("contour de l'image: \n");
-    
-    while (boucle){
-        memoriser_position (pos);
-        pos = avancer(pos,O,1);
-        O = nouvelle_orientation(I,pos,O);
 
-        if(pos.x == x0 && pos.y == y0 && O == Est){
-            boucle = false;
-        }
-    }
-    memoriser_position(pos);
-    printf("\n");
-
+    memoire_sous_fichier(I, P, pos, O); 
 }
 

@@ -12,7 +12,7 @@ void orientation(Orientation o);
 
 Point trouver_pixel_depart(Image I);
 
-void memoriser_position(Point position);
+void memoriser_position(FILE *f, Point position);
 
 Point avancer(Point p, Orientation o, int k);
 
