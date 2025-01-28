@@ -21,7 +21,7 @@ void ecrire_orientation(Orientation o){
             printf("Est \n");
             break;
         case Sud :
-            printf("Est \n");
+            printf("Sud \n");
             break;
         case Ouest :
             printf("Ouest \n");
@@ -151,6 +151,16 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     fprintf(file,"%d\n\n",i+1);
 
     fclose(file);
+}
+
+void memoire_tableau(){
+    unsigned int DIM_MAX = 10000;
+    typedef Point TabPoints[DIM_MAX];
+    typedef struct Contour_{
+        unsigned int np;
+        TabPoints tab;
+    }Contour;
+    
 }
 
 void memoriser_position(FILE *file, Point pos){
