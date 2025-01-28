@@ -1,0 +1,13 @@
+P1
+#dimension L puis dimension H
+6 9
+#pixels de l'image
+000000
+011110
+010000
+010000
+011110
+000010
+000010
+011110
+000000
