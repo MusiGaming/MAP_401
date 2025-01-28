@@ -3,7 +3,6 @@
 
 #include "image.h"
 #include "geom2d.h"
-#include "conventions.h"
 
 typedef enum {Nord, Est, Sud, Ouest} Orientation; 
 

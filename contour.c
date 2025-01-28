@@ -53,22 +53,20 @@ void memoriser_position(Point pos){
 }
 
 Point avancer(Point p, Orientation o, int k){
-    Point nv_p; 
     switch (o){
         case Nord : 
-            nv_p = set_point(p.x,p.y - k);
+            return set_point(p.x,p.y - k);
             break;
         case Est :
-            nv_p = set_point(p.x + k,p.y);
+            return set_point(p.x + k,p.y);
             break;   
         case Sud : 
-            nv_p = set_point(p.x,p.y + k);
+            return set_point(p.x,p.y + k);
             break;
         case Ouest : 
-            nv_p = set_point(p.x - k, p.y);
+            return set_point(p.x - k, p.y);
             break;
     }
-    return nv_p;
 }
 
 Orientation tourner_robot(Orientation o, int deg) {
@@ -110,8 +108,8 @@ Orientation nouvelle_orientation(Image I, Point p, Orientation o){
 int main(int argc, char *argv[]){
     Point P, pos;
     double x0, y0 ;
-    Image I;
-    P = trouver_pixel_depart (I);
+    Image I = lire_fichier_image(argv[1]);
+    P = trouver_pixel_depart(I);
 
     
     x0 = P.x - 1 ;

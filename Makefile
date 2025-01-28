@@ -77,7 +77,7 @@ conventions.o : conventions.c conventions.h geom2d.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-contour.o : contour.c contour.h 
+contour.o : contour.c contour.h image.h geom2d.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module contour"
@@ -116,12 +116,12 @@ test_geometrie : test_geometrie.o geom2d.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -o $@
 
-contour : contour.o 
+contour : contour.o image.o geom2d.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module contour"
 	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
+	$(CC) $^ $(LDOPTS) -o $@
 
 
 # regle pour "nettoyer" le r�pertoire
