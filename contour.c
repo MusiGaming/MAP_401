@@ -153,15 +153,15 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     fclose(file);
 }
 
-// void memoire_tableau(){
-//     unsigned int DIM_MAX = 10000;
-//     typedef Point TabPoints[DIM_MAX];
-//     typedef struct Contour_{
-//         unsigned int np;
-//         TabPoints tab;
-//     }Contour;
+void memoire_tableau(){
+    unsigned int DIM_MAX = 10000;
+    typedef Point TabPoints[DIM_MAX];
+    typedef struct Contour_{
+        unsigned int np;
+        TabPoints tab;
+    }Contour;
     
-// }
+}
 
 void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
