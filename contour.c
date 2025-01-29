@@ -188,5 +188,3 @@ int main(int argc, char *argv[]){
 
     memoire_sous_fichier(I, P, pos, O); 
 }
-
-//test pc 2
