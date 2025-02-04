@@ -139,6 +139,7 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     while (true){
         i++;
         fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+        // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
         pos = avancer(pos,O,1);
         O = nouvelle_orientation(I,pos,O);
 
@@ -147,21 +148,22 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
         }
     }
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+    // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
     rewind(file);
     fprintf(file,"%d\n\n",i+1);
 
     fclose(file);
 }
 
-void memoire_tableau(){
-    unsigned int DIM_MAX = 10000;
-    typedef Point TabPoints[DIM_MAX];
-    typedef struct Contour_{
-        unsigned int np;
-        TabPoints tab;
-    }Contour;
+// void memoire_tableau(){
+//     unsigned int DIM_MAX = 10000;
+//     typedef Point TabPoints[DIM_MAX];
+//     typedef struct Contour_{
+//         unsigned int np;
+//         TabPoints tab;
+//     }Contour;
     
-}
+// }
 
 void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
@@ -188,5 +190,3 @@ int main(int argc, char *argv[]){
 
     memoire_sous_fichier(I, P, pos, O); 
 }
-
-//test pc 2
