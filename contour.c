@@ -126,10 +126,13 @@ void tests(Point P) {
     printf("Case INITIIIIIIIIIIIAALE : (%.2lf , %.2lf) \n", P.x,P.y);
 }
 
-void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
+Contour memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     double x0 = P.x - 1, y0 = P.y - 1;
     int i = 0;
+    Contour C;
 
+    C = creer_liste_Point_vide();
+    printf("C :"); ecrire_contour(C);
     pos = set_point(x0,y0);
 
     FILE *file;
@@ -140,6 +143,7 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
         i++;
         fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
         // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
+        C = ajouter_element_liste_Point(C, pos);
         pos = avancer(pos,O,1);
         O = nouvelle_orientation(I,pos,O);
 
@@ -148,22 +152,15 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
         }
     }
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+    C = ajouter_element_liste_Point(C, pos);
+    printf("C :"); ecrire_contour(C);
     // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
     rewind(file);
     fprintf(file,"Taille du contour : %d points\n\n",i+1);
 
     fclose(file);
+    return C;
 }
-
-// void memoire_tableau(){
-//     unsigned int DIM_MAX = 10000;
-//     typedef Point TabPoints[DIM_MAX];
-//     typedef struct Contour_{
-//         unsigned int np;
-//         TabPoints tableau;
-//     }Contour;
-    
-// }
 
 void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
@@ -182,7 +179,8 @@ int main(int argc, char *argv[]){
 
     Point P,pos;
     Image I = lire_fichier_image(argv[1]);
-    Orientation O = Est ; 
+    Orientation O = Est ;
+    Contour C;
     double x0 = P.x - 1, y0 = P.y - 1;
 
     pos = set_point(x0,y0);
@@ -192,5 +190,5 @@ int main(int argc, char *argv[]){
 
     printf("contour de l'image: \n");
 
-    memoire_sous_fichier(I, P, pos, O); 
+    C = memoire_sous_fichier(I, P, pos, O); 
 }
