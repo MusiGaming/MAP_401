@@ -134,7 +134,7 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
 
     FILE *file;
     file = fopen("contour_ecriture.txt","w");
-    fprintf(file, "\n   ");
+    fprintf(file, "Taille du contour :   points\n  ");
 
     while (true){
         i++;
@@ -150,7 +150,7 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
     // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
     rewind(file);
-    fprintf(file,"%d\n\n",i+1);
+    fprintf(file,"Taille du contour : %d points\n\n",i+1);
 
     fclose(file);
 }
@@ -160,13 +160,17 @@ void memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
 //     typedef Point TabPoints[DIM_MAX];
 //     typedef struct Contour_{
 //         unsigned int np;
-//         TabPoints tab;
+//         TabPoints tableau;
 //     }Contour;
     
 // }
 
 void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
+}
+
+void info_fichier(){
+    
 }
 
 int main(int argc, char *argv[]){

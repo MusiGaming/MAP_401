@@ -5,16 +5,6 @@
 #include<stdlib.h> /* utilisation des fonctions malloc et free */
 #include "geom2d.h"
 
-
-/*---- le type Point et la fonction set_point ----*/
-/* ou inclure le module de la tache 2             */
-//typedef struct Point_ { double x,y; } Point;
-
-Point set_point(double x, double y)
-{
-	Point P = {x,y}; return P;
-}
-
 /*---- le type cellule de liste de point ----*/
 typedef struct Cellule_Liste_Point_
 {
