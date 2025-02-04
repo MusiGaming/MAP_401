@@ -193,5 +193,4 @@ int main(int argc, char *argv[]){
     printf("contour de l'image: \n");
 
     memoire_sous_fichier(I, P, pos, O); 
-    //vsy je fait un nv test
 }
