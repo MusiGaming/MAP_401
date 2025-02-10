@@ -1,6 +1,7 @@
 #include<stdio.h>  /* utilisation des entrees-sorties standard de C */
 #include<stdlib.h> /* utilisation des fonctions malloc et free */
 #include <stdbool.h>
+#include <string.h>
 #include "contour.h"
 
 
@@ -132,7 +133,6 @@ Contour memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     Contour C;
 
     C = creer_liste_Point_vide();
-    printf("C :"); ecrire_contour(C);
     pos = set_point(x0,y0);
 
     FILE *file;
@@ -166,8 +166,41 @@ void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
 }
 
-void info_fichier(){
+void eps_fichier(char *nom, Contour C, UINT h, UINT l){
+
+    int size = strlen(nom);
+    for(int i = size; i > (size - 4); i--) {
+        nom[i-1] = '\0';
+    }
+    nom = strcat(nom, ".eps");
     
+    FILE *file;
+    file = fopen(nom, "w");
+    fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
+    fprintf(file , "%%%%BoundingBox: 0 0 %u %u\n\n", l, h);
+
+    double i = h;
+    fprintf(file, "%f %f moveto\n", C.first->data.x, h-C.first->data.y);
+        C.first = C.first->suiv;
+    while (C.first->suiv != C.last) {
+        fprintf(file, "%f %f lineto\n", C.first->data.x, h-C.first->data.y);
+        C.first = C.first->suiv;
+    }
+    fprintf(file, "%f %f lineto\n", C.last->data.x, h-C.last->data.y);
+
+    printf("Quel mode pour le remplissage ? (0 = vide, 1 = fill)\n");
+    int mode = 0;
+    scanf("%d", &mode);
+    
+    if (mode == 1) {
+        fprintf(file, "\n0 setlinewidth fill\n\nshowpage");
+    }
+    else {
+        fprintf(file, "\n0 setlinewidth stroke\n\nshowpage");
+    }
+
+    fclose(file);
+
 }
 
 int main(int argc, char *argv[]){
@@ -186,9 +219,12 @@ int main(int argc, char *argv[]){
     pos = set_point(x0,y0);
     P = trouver_pixel_depart(I);
 
-    tests(P);
+    // tests(P);
 
-    printf("contour de l'image: \n");
+    // printf("contour de l'image: \n");
 
     C = memoire_sous_fichier(I, P, pos, O); 
+
+    
+    eps_fichier(argv[1], C, hauteur_image(I), largeur_image(I));
 }
