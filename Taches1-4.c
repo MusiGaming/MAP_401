@@ -2,7 +2,7 @@
 #include<stdlib.h> /* utilisation des fonctions malloc et free */
 #include <stdbool.h>
 #include <string.h>
-#include "contour.h"
+#include "Taches1-4.h"
 
 
 void ecrire_pixel(Pixel p){
