@@ -229,6 +229,7 @@ Image Image_calque(Image I){
 
 void TT_Les_Contours(Image I, Orientation O) {
     Image Calque = Image_calque(I);
+    int nb_contours = 0, nb_point_total = 0, nb_segment = 0;
 
     while (!image_vide(Calque)){
         Point P = trouver_pixel_depart(Calque);
@@ -258,8 +259,14 @@ void TT_Les_Contours(Image I, Orientation O) {
         set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
         printf("C :"); ecrire_contour(C);
         ecrire_image(Calque);
+        i++;
+        printf("i : %d\n", i);
+        nb_contours++;
+        nb_point_total = nb_point_total +i;
+        nb_segment = nb_segment +i -1;
     }
-    
+    printf("On a trouvé %d contours \n", nb_contours);
+    printf("Avec un total de %d points et %d segments\n", nb_point_total, nb_segment);
 }
 
 
