@@ -179,7 +179,6 @@ void eps_fichier(char *nom, Contour C, UINT h, UINT l){
     fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
     fprintf(file , "%%%%BoundingBox: 0 0 %u %u\n\n", l, h);
 
-    double i = h;
     fprintf(file, "%f %f moveto\n", C.first->data.x, h-C.first->data.y);
         C.first = C.first->suiv;
     while (C.first->suiv != C.last) {
@@ -203,6 +202,67 @@ void eps_fichier(char *nom, Contour C, UINT h, UINT l){
 
 }
 
+bool image_vide(Image I) {
+    for (int h = 0; h<=hauteur_image(I); h++){
+        for (int l = 0; l<=largeur_image(I); l++){
+            if (get_pixel_image(I,l,h) == NOIR ) {
+                return false;
+                break;
+            }
+        }
+    }
+    return true;
+}
+
+Image Image_calque(Image I){
+    Image Calque = creer_image(largeur_image(I), hauteur_image(I));
+    for (int h = 0; h<=hauteur_image(I); h++){
+        for (int l = 0; l<=largeur_image(I); l++){
+            if (get_pixel_image(I,l,h) == NOIR && get_pixel_image(I,l,h-1)==BLANC) {
+                set_pixel_image(Calque, l, h, NOIR);
+            }
+        }
+    }
+    ecrire_image(Calque);
+    return(Calque);
+}
+
+void TT_Les_Contours(Image I, Orientation O) {
+    Image Calque = Image_calque(I);
+
+    while (!image_vide(Calque)){
+        Point P = trouver_pixel_depart(Calque);
+        Contour C = creer_liste_Point_vide();
+        
+        double x0 = P.x - 1, y0 = P.y - 1;
+        int i = 0;
+
+        Point pos = set_point(x0,y0);
+
+        printf("P : x=%f, y=%f\n", P.x, P.y);
+        printf("pos : x=%f, y=%f\n", pos.x, pos.y);
+
+        while (true){
+            i++;
+            // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
+            C = ajouter_element_liste_Point(C, pos);
+            set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
+            pos = avancer(pos,O,1);
+            O = nouvelle_orientation(I,pos,O);
+            
+            if(pos.x == x0 && pos.y == y0 && O == Est){
+                break;
+            }
+        }
+        C = ajouter_element_liste_Point(C, pos);
+        set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
+        printf("C :"); ecrire_contour(C);
+        ecrire_image(Calque);
+    }
+    
+}
+
+
 int main(int argc, char *argv[]){
 
     if (argc>2) {
@@ -213,13 +273,16 @@ int main(int argc, char *argv[]){
     Point P,pos;
     Image I = lire_fichier_image(argv[1]);
     Orientation O = Est ;
-    Contour C;
+    // Contour C;
     double x0 = P.x - 1, y0 = P.y - 1;
 
     pos = set_point(x0,y0);
     P = trouver_pixel_depart(I);
 
-    C = memoire_sous_fichier(I, P, pos, O); 
+    
+    TT_Les_Contours(I, O);
 
-    eps_fichier(argv[1], C, hauteur_image(I), largeur_image(I));
+    // C = memoire_sous_fichier(I, P, pos, O); 
+
+    // eps_fichier(argv[1], C, hauteur_image(I), largeur_image(I));
 }
