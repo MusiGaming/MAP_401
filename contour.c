@@ -166,8 +166,17 @@ void memoriser_position(FILE *file, Point pos){
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);
 }
 
-void eps_fichier(char *nom, Contour C, UINT h, UINT l){
+void eps_fichier(FILE *file, Contour C, UINT h, UINT l){
+    fprintf(file, "%f %f moveto\n", C.first->data.x, h-C.first->data.y);
+        C.first = C.first->suiv;
+    while (C.first->suiv != C.last) {
+        fprintf(file, "%f %f lineto\n", C.first->data.x, h-C.first->data.y);
+        C.first = C.first->suiv;
+    }
+    fprintf(file, "%f %f lineto\n", C.last->data.x, h-C.last->data.y);
+}
 
+void esp_fichier_tt_contours(char nom[], Liste_Contour LC, UINT h, UINT l) {
     int size = strlen(nom);
     for(int i = size; i > (size - 4); i--) {
         nom[i-1] = '\0';
@@ -179,13 +188,10 @@ void eps_fichier(char *nom, Contour C, UINT h, UINT l){
     fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
     fprintf(file , "%%%%BoundingBox: 0 0 %u %u\n\n", l, h);
 
-    fprintf(file, "%f %f moveto\n", C.first->data.x, h-C.first->data.y);
-        C.first = C.first->suiv;
-    while (C.first->suiv != C.last) {
-        fprintf(file, "%f %f lineto\n", C.first->data.x, h-C.first->data.y);
-        C.first = C.first->suiv;
-    }
-    fprintf(file, "%f %f lineto\n", C.last->data.x, h-C.last->data.y);
+    Tableau_Contour TC = sequence_Contours_liste_vers_tableau(LC);
+    for (int i = 0; i < TC.taille; i++) {
+        eps_fichier(file, TC.tab[i], h, l);
+    }    
 
     printf("Quel mode pour le remplissage ? (0 = vide, 1 = fill)\n");
     int mode = 0;
@@ -199,7 +205,6 @@ void eps_fichier(char *nom, Contour C, UINT h, UINT l){
     }
 
     fclose(file);
-
 }
 
 bool image_vide(Image I) {
@@ -227,7 +232,8 @@ Image Image_calque(Image I){
     return(Calque);
 }
 
-void TT_Les_Contours(Image I, Orientation O) {
+Liste_Contour TT_Les_Contours(Image I, Orientation O) {
+    Liste_Contour LC = creer_liste_Contour_vide();
     Image Calque = Image_calque(I);
     int nb_contours = 0, nb_point_total = 0, nb_segment = 0;
 
@@ -240,17 +246,17 @@ void TT_Les_Contours(Image I, Orientation O) {
 
         Point pos = set_point(x0,y0);
 
-        printf("P : x=%f, y=%f\n", P.x, P.y);
-        printf("pos : x=%f, y=%f\n", pos.x, pos.y);
+        // printf("P : x=%f, y=%f\n", P.x, P.y);
+        // printf("pos : x=%f, y=%f\n", pos.x, pos.y);
 
         while (true){
             i++;
             // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
             C = ajouter_element_liste_Point(C, pos);
-            set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
             pos = avancer(pos,O,1);
             O = nouvelle_orientation(I,pos,O);
-            
+            set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
+
             if(pos.x == x0 && pos.y == y0 && O == Est){
                 break;
             }
@@ -260,13 +266,19 @@ void TT_Les_Contours(Image I, Orientation O) {
         printf("C :"); ecrire_contour(C);
         ecrire_image(Calque);
         i++;
-        printf("i : %d\n", i);
+
         nb_contours++;
         nb_point_total = nb_point_total +i;
         nb_segment = nb_segment +i -1;
+
+        LC = ajouter_element_liste_Contour(LC, C);
     }
+
     printf("On a trouvé %d contours \n", nb_contours);
     printf("Avec un total de %d points et %d segments\n", nb_point_total, nb_segment);
+
+    // ecrire_list_contour(LC);
+    return LC;
 }
 
 
@@ -286,10 +298,8 @@ int main(int argc, char *argv[]){
     pos = set_point(x0,y0);
     P = trouver_pixel_depart(I);
 
-    
-    TT_Les_Contours(I, O);
+    Liste_Contour LC;
+    LC = TT_Les_Contours(I, O);
 
-    // C = memoire_sous_fichier(I, P, pos, O); 
-
-    // eps_fichier(argv[1], C, hauteur_image(I), largeur_image(I));
+    esp_fichier_tt_contours(argv[1], LC, hauteur_image(I), largeur_image(I));
 }

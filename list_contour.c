@@ -132,17 +132,17 @@ Tableau_Contour sequence_Contours_liste_vers_tableau(Liste_Contour L)
    sequence de Contours par indice */
 void ecrire_list_contour(Liste_Contour L)
 {
-	Tableau_Contour TP = sequence_Contours_liste_vers_tableau(L);
+	Tableau_Contour TC = sequence_Contours_liste_vers_tableau(L);
 	int k;
-	int nP = TP.taille;
+	int nP = TC.taille;
 	
-	printf("Contour avec %d Contours\n[", nP);
+	printf("Liste contour avec %d éléments\n[", nP);
 	for (k = 0; k < nP; k++)
 	{	
-		Contour P = TP.tab[k]; /* recuperer le Contour d'indice k */
+		Contour P = TC.tab[k]; /* recuperer le Contour d'indice k */
 		ecrire_contour(P);
 	} 
 	printf("]\n");
 	
-	free(TP.tab); /* supprimer le tableau de Contour TP */
+	free(TC.tab); /* supprimer le tableau de Contour TC */
 }
