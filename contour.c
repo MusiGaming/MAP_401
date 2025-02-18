@@ -255,7 +255,10 @@ Liste_Contour TT_Les_Contours(Image I, Orientation O) {
             C = ajouter_element_liste_Point(C, pos);
             pos = avancer(pos,O,1);
             O = nouvelle_orientation(I,pos,O);
-            set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
+            
+            if (O==Est) {
+                set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
+            }
 
             if(pos.x == x0 && pos.y == y0 && O == Est){
                 break;
