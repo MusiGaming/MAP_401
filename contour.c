@@ -228,7 +228,7 @@ Image Image_calque(Image I){
             }
         }
     }
-    ecrire_image(Calque);
+    // ecrire_image(Calque);
     return(Calque);
 }
 
@@ -255,7 +255,7 @@ Liste_Contour TT_Les_Contours(Image I, Orientation O) {
             C = ajouter_element_liste_Point(C, pos);
             pos = avancer(pos,O,1);
             O = nouvelle_orientation(I,pos,O);
-            
+
             if (O==Est) {
                 set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
             }
@@ -266,8 +266,8 @@ Liste_Contour TT_Les_Contours(Image I, Orientation O) {
         }
         C = ajouter_element_liste_Point(C, pos);
         set_pixel_image(Calque, pos.x+1, pos.y+1, BLANC);
-        printf("C :"); ecrire_contour(C);
-        ecrire_image(Calque);
+        // printf("C :"); ecrire_contour(C);
+        // ecrire_image(Calque);
         i++;
 
         nb_contours++;
@@ -292,17 +292,19 @@ int main(int argc, char *argv[]){
         exit(999);
     }
 
-    Point P,pos;
-    Image I = lire_fichier_image(argv[1]);
-    Orientation O = Est ;
+    // Point P,pos;
+    // Image I = lire_fichier_image(argv[1]);
+    // Orientation O = Est ;
     // Contour C;
-    double x0 = P.x - 1, y0 = P.y - 1;
+    // double x0 = P.x - 1, y0 = P.y - 1;
 
-    pos = set_point(x0,y0);
-    P = trouver_pixel_depart(I);
+    // pos = set_point(x0,y0);
+    // P = trouver_pixel_depart(I);
 
-    Liste_Contour LC;
-    LC = TT_Les_Contours(I, O);
+    // Liste_Contour LC;
+    // LC = TT_Les_Contours(I, O);
 
-    esp_fichier_tt_contours(argv[1], LC, hauteur_image(I), largeur_image(I));
+    // esp_fichier_tt_contours(argv[1], LC, hauteur_image(I), largeur_image(I));
+
+    Point P1, P2;
 }
