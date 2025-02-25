@@ -169,7 +169,7 @@ void memoriser_position(FILE *file, Point pos){
 void eps_fichier(FILE *file, Contour C, UINT h, UINT l){
     fprintf(file, "%f %f moveto\n", C.first->data.x, h-C.first->data.y);
         C.first = C.first->suiv;
-    while (C.first->suiv != C.last) {
+    while (C.first != C.last) {
         fprintf(file, "%f %f lineto\n", C.first->data.x, h-C.first->data.y);
         C.first = C.first->suiv;
     }
@@ -280,22 +280,46 @@ Liste_Contour TT_Les_Contours(Image I, Orientation O) {
     printf("On a trouvé %d contours \n", nb_contours);
     printf("Avec un total de %d points et %d segments\n", nb_point_total, nb_segment);
 
-    // ecrire_list_contour(LC);
+    ecrire_list_contour(LC);
     return LC;
 }
 
+double seg(Point A, Point B, Point P){
+    if (A.x == B.x && A.y == B.y){
+        return distance(A,P);
+    }
+    else {
+        double lambda = produit_scalaire(vect_bipoint(A,P),vect_bipoint(A,B))/produit_scalaire(vect_bipoint(A,B),vect_bipoint(A,B));
+        printf("Lambda : %f\n", lambda);
+        if (lambda<0) {
+            printf("1\n");
+            return distance(A, P);
+        }
+        else if (lambda <= 1) {
+            Point Q;
+            Q.x = A.x + lambda*(B.x-A.x);
+            Q.y = A.y + lambda*(B.y-A.y);
+            printf("2\n");
+            return distance(Q, P);
+        }
+        else {
+            printf("3\n");
+            return distance(B, P);
+        }
+    }
+}
 
 int main(int argc, char *argv[]){
 
-    if (argc>2) {
-        printf("Erreur nombre d'arguments");
-        exit(999);
-    }
+    // if (argc>2) {
+    //     printf("Erreur nombre d'arguments");
+    //     exit(999);
+    // }
 
     // Point P,pos;
     // Image I = lire_fichier_image(argv[1]);
     // Orientation O = Est ;
-    // Contour C;
+    // // Contour C;
     // double x0 = P.x - 1, y0 = P.y - 1;
 
     // pos = set_point(x0,y0);
@@ -305,6 +329,11 @@ int main(int argc, char *argv[]){
     // LC = TT_Les_Contours(I, O);
 
     // esp_fichier_tt_contours(argv[1], LC, hauteur_image(I), largeur_image(I));
-
-    Point P1, P2;
+    double dist = 0;
+    Point A, B, P;
+    A.x = 3; A.y = 1;
+    B.x = 4; B.y = 1;
+    P.x = 2; P.y = 2;
+    dist = seg(A,B, P);
+    printf("dist : %f\n", dist);
 }
