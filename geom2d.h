@@ -11,6 +11,10 @@ typedef struct Point {
     double x,y ; //coordonnees
 } Point;
 
+typedef struct Segment {
+    Point A,B ; //coordonnees
+} Segment;
+
 
 Point set_point (double x, double y);
 

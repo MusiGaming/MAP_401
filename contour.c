@@ -194,9 +194,9 @@ void esp_fichier_tt_contours(char nom[], Liste_Contour LC, UINT h, UINT l) {
     fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");                //On écrit les deux premières lignes obligatoires du format .eps
     fprintf(file , "%%%%BoundingBox: 0 0 %u %u\n\n", l, h);     //Avec la taille de l'image à créer (donc les mêmes que l'image donné)
 
-    Tableau_Contour TC = sequence_Contours_liste_vers_tableau(LC);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
-    for (int i = 0; i < TC.taille; i++) {                               //Puis, pour chaque contour,  
-        eps_fichier(file, TC.tab[i], h, l);                             //on les écrit dans le fichier 
+    Tableau_Contour TLC = sequence_Contours_liste_vers_tableau(LC);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
+    for (int i = 0; i < TLC.taille; i++) {                               //Puis, pour chaque contour,  
+        eps_fichier(file, TLC.tab[i], h, l);                             //on les écrit dans le fichier 
     }    
 
     printf("Quel mode pour le remplissage ? (0 = vide, 1 = fill)\n");   //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
@@ -304,43 +304,95 @@ double dist_seg(Point A, Point B, Point P){
     else {                                      //cas si A différent de B
         //Calcul de lambda, une variable permettant de savoir la position de P par rapport au segment [A,B]
         double lambda = produit_scalaire(vect_bipoint(A,P),vect_bipoint(A,B))/produit_scalaire(vect_bipoint(A,B),vect_bipoint(A,B));
-        printf("Lambda : %f\n", lambda);
+        // printf("Lambda : %f\n", lambda);
         if (lambda<0) {                         //Si le Q, projeté de P par rapport à [A,B], est avant A
-            printf("1\n");                        //prints de débuggage (ne pas garder si possible) #47
+            // printf("1\n");                        //prints de débuggage (ne pas garder si possible) #47
             return distance(A, P);              //On retourne la distance entre A et P
         }
         else if (lambda <= 1) {                 //Si le Q, projeté de P par rapport à [A,B], est entre A et B inclus
             Point Q;                            //On défini et calcul la position de Q (voir calcul en bas de la p26 du polycopié étudiant)
             Q.x = A.x + lambda*(B.x-A.x);
             Q.y = A.y + lambda*(B.y-A.y);
-            printf("2\n");                        //prints de débuggage (ne pas garder si possible) #47
+            // printf("2\n");                        //prints de débuggage (ne pas garder si possible) #47
             return distance(Q, P);              //On retourne la distance entre Q et P
         }
         else {                                  //Si le Q, projeté de P par rapport à [A,B], est après B
-            printf("3\n");                        //prints de débuggage (ne pas garder si possible) #47
+            // printf("3\n");                        //prints de débuggage (ne pas garder si possible) #47
             return distance(B, P);              //On retourne la distance entre B et P
         }
     }
 }
 
+//Fonction récurente qui renvoie un contour simplifié 
+//Lire page 27 à 29 du polycopié de livret étudiant (de TD)
+Liste_Point simplification_douglas_peucker(Contour C, int j1, int j2, double d) {
+    Tableau_Point TC = sequence_points_liste_vers_tableau(C);       //On transforme notre contour en tableau de point pour une manipulation plus facile 
+    Liste_Point L = creer_liste_Point_vide();                       //On créer la liste simplifier vide
+    double dmax = 0, dj = 0;
+    int k = j1;
+
+    for (int j = j1+1; j <= j2; j++) {                              //Pour chaque points entre les point j1 et j2
+        dj = dist_seg(TC.tab[j1], TC.tab[j2], TC.tab[j]);           //On regarde la distance du point par rapport au segment des points j1-j2
+        if (dmax < dj){                                             //On trouve le point qui est le plus éloigné du segment
+            dmax = dj;
+            k = j;          //indice du point le plus éloigné
+        }
+    }
+
+    if (dmax < d) {                                                         //Si la distance du point le plus éloigné est plus grand que la précision
+        //ajouter_element_liste_Point(L, TC.tab[j1]);                         //On rajoute les points du segments dans la liste simplifiée
+        L = ajouter_element_liste_Point(L, TC.tab[j2]);
+    } else {                                                                //Sinon, on divise le segment au point le plus éloigné et on recommence
+        Liste_Point L1 = simplification_douglas_peucker(C, j1, k, d);       // #divide&conquer
+        Liste_Point L2 = simplification_douglas_peucker(C, k, j2, d);
+        L = concatener_liste_Point(L1, L2);
+    }
+    // ecrire_contour(L);
+    return L;   //On renvoi notre liste simplifié
+}
+
+Liste_Contour TT_Contours_Simplifier_Douglas(Liste_Contour LC){
+    Tableau_Contour TLC = sequence_Contours_liste_vers_tableau(LC);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
+    Liste_Contour TTL = creer_liste_Contour_vide();                       //TT les contours simplifier
+    
+    printf("Quel degré de simplification voulez-vous ? (entre 0 et 1)\n");      //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
+    double d = 0;
+    scanf("%lf", &d);                                                            //On vérifie et récupère la réponse de l'utilisateur
+    
+    
+    for (int i = 0; i < TLC.taille; i++) {                               //Puis, pour chaque contour,  
+        printf("%d\n", i);
+        Liste_Point L1 = creer_liste_Point_vide();
+        Liste_Point L, L2;
+        L1 = ajouter_element_liste_Point(L1, TLC.tab[i].first->data);
+
+        L2 = simplification_douglas_peucker(TLC.tab[i], 0, TLC.tab[i].taille -1, d);
+        L = concatener_liste_Point(L1, L2);
+        // ecrire_contour(L);
+        TTL = ajouter_element_liste_Contour(TTL, L);
+    }  
+    ecrire_list_contour(TTL);
+    return TTL;
+}
+
 int main(int argc, char *argv[]){
 
-    // if (argc>2) {
-    //     printf("Erreur nombre d'arguments");
-    //     exit(999);
-    // }
+    if (argc>2) {
+        printf("Erreur nombre d'arguments");
+        exit(999);
+    }
 
-    // Image I = lire_fichier_image(argv[1]);
-    // Liste_Contour LC;
-    // LC = TT_Les_Contours(I);
-
-    // esp_fichier_tt_contours(argv[1], LC, hauteur_image(I), largeur_image(I));
+    Image I = lire_fichier_image(argv[1]);
+    Liste_Contour LC,LC2;
+    LC = TT_Les_Contours(I);
+    LC2 = TT_Contours_Simplifier_Douglas(LC);
+    esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
     
-    double dist = 0;
-    Point A, B, P;
-    A.x = 3; A.y = 1;
-    B.x = 4; B.y = 1;
-    P.x = 2; P.y = 2;
-    dist = dist_seg(A,B, P);
-    printf("dist : %f\n", dist);
+    // double dist = 0;
+    // Point A, B, P;
+    // A.x = 3; A.y = 1;
+    // B.x = 4; B.y = 1;
+    // P.x = 2; P.y = 2;
+    // dist = dist_seg(A,B, P);
+    // printf("dist : %f\n", dist);
 }
