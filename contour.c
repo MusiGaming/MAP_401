@@ -161,7 +161,7 @@ Contour memoire_sous_fichier(Image I, Point P, Point pos, Orientation O){
     }
     fprintf(file," %.2lf  %.2lf\n",pos.x,pos.y);                //On refait une dernière itération pour remettre le 1er élément à la fin du contour,
     C = ajouter_element_liste_Point(C, pos);                    //pour boucler le tour du contour
-    printf("C :"); ecrire_contour(C);                           //On ecrit dans le terminal notre contour
+    printf("C :");                           //On ecrit dans le terminal notre contour
     // printf(" %.2lf  %.2lf\n",pos.x,pos.y);
     rewind(file);                                               //retour au début de fichier
     fprintf(file,"Taille du contour : %d points\n\n",i+1);      //on écrit dans le fichier le nombre de points dans le contour
@@ -288,10 +288,10 @@ Liste_Contour TT_Les_Contours(Image I) {
         LC = ajouter_element_liste_Contour(LC, C);                          //Puis on ajoute le contour actuel à notre liste de contour
     }
 
+    // ecrire_list_contour(LC);                                                            //écriture de la liste de contours dans le terminal #47
     printf("On a trouvé %d contours \n", nb_contours);                                  //Affichage des stats #47
     printf("Avec un total de %d points et %d segments\n", nb_point_total, nb_segment);
 
-    ecrire_list_contour(LC);                                                            //écriture de la liste de contours dans le terminal #47
     return LC;                                                                          //Retourne la liste de contours
 }
 
@@ -339,12 +339,13 @@ Liste_Point simplification_douglas_peucker(Contour C, int j1, int j2, double d) 
         }
     }
 
-    if (dmax < d) {                                                         //Si la distance du point le plus éloigné est plus grand que la précision
-        //ajouter_element_liste_Point(L, TC.tab[j1]);                         //On rajoute les points du segments dans la liste simplifiée
+    if (dmax <= d) {                                                         //Si la distance du point le plus éloigné est plus grand que la précision
+        L = ajouter_element_liste_Point(L, TC.tab[j1]);                         //On rajoute les points du segments dans la liste simplifiée
         L = ajouter_element_liste_Point(L, TC.tab[j2]);
     } else {                                                                //Sinon, on divise le segment au point le plus éloigné et on recommence
         Liste_Point L1 = simplification_douglas_peucker(C, j1, k, d);       // #divide&conquer
         Liste_Point L2 = simplification_douglas_peucker(C, k, j2, d);
+        L2 = supprimer_premier_element_liste_Point(L2);
         L = concatener_liste_Point(L1, L2);
     }
     // ecrire_contour(L);
@@ -367,12 +368,23 @@ Liste_Contour TT_Contours_Simplifier_Douglas(Liste_Contour LC){
         L1 = ajouter_element_liste_Point(L1, TLC.tab[i].first->data);
 
         L2 = simplification_douglas_peucker(TLC.tab[i], 0, TLC.tab[i].taille -1, d);
+        L2 = supprimer_premier_element_liste_Point(L2);                                 //LIGNE EXTREMEMENT IMPORTANTE
         L = concatener_liste_Point(L1, L2);
         // ecrire_contour(L);
         TTL = ajouter_element_liste_Contour(TTL, L);
     }  
     ecrire_list_contour(TTL);
     return TTL;
+}
+
+int nb_points(Liste_Contour LC){
+    int s = 0;
+    Cellule_Liste_Contour* cel = LC.first;
+    while(cel != NULL){
+        s = s + (cel->data.taille);
+        cel = cel->suiv;
+    }
+    return s;
 }
 
 int main(int argc, char *argv[]){
@@ -386,13 +398,8 @@ int main(int argc, char *argv[]){
     Liste_Contour LC,LC2;
     LC = TT_Les_Contours(I);
     LC2 = TT_Contours_Simplifier_Douglas(LC);
-    esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
+    int p = nb_points(LC2);
+    printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
+    //esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
     
-    // double dist = 0;
-    // Point A, B, P;
-    // A.x = 3; A.y = 1;
-    // B.x = 4; B.y = 1;
-    // P.x = 2; P.y = 2;
-    // dist = dist_seg(A,B, P);
-    // printf("dist : %f\n", dist);
 }
