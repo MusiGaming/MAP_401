@@ -37,7 +37,7 @@ INCLUDEOPTS = -I$(INCDIR)
 COMPILOPTS = -g -Wall $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = test_image test_geometrie contour
+EXECUTABLES = test_image test_geometrie simplification_Bezier
 
 
 #############################################################################
@@ -98,6 +98,13 @@ contour.o : contour.c contour.h image.h geom2d.h conventions.h list_contour.h li
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
+simplification_Bezier.o : simplification_Bezier.c simplification_Bezier.h contour.h image.h geom2d.h conventions.h list_contour.h list_bezier2.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module simplification_Bezier"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
 test_image.o : test_image.c image.h 
 	@echo ""
 	@echo "---------------------------------------------"
@@ -137,6 +144,12 @@ contour : image.o geom2d.o conventions.o list_contour.o list_bezier2.o contour.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -o $@
 
+simplification_Bezier : image.o geom2d.o conventions.o list_contour.o list_bezier2.o contour.o simplification_Bezier.o
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module simplification_Bezier"
+	@echo "---------------------------------------------"
+	$(CC) $^ $(LDOPTS) -o $@
 
 # regle pour "nettoyer" le r�pertoire
 clean:
