@@ -5,6 +5,7 @@
 #include "geom2d.h"
 #include "conventions.h"
 #include "list_contour.h"
+#include "list_bezier2.h"
 
 typedef enum {Nord, Est, Sud, Ouest} Orientation; 
 
@@ -19,5 +20,6 @@ void memoriser_position(FILE *f, Point position);
 Point avancer(Point p, Orientation o, int k);
 
 Orientation nouvelle_orientation(Image I, Point p, Orientation o);
+
 
 #endif

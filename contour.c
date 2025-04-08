@@ -356,13 +356,12 @@ Liste_Contour TT_Contours_Simplifier_Douglas(Liste_Contour LC){
     Tableau_Contour TLC = sequence_Contours_liste_vers_tableau(LC);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
     Liste_Contour TTL = creer_liste_Contour_vide();                       //TT les contours simplifier
     
-    printf("Quel degré de simplification voulez-vous ? (entre 0 et 1)\n");      //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
+    printf("Quel degré de simplification voulez-vous ? \n");      //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
     double d = 0;
     scanf("%lf", &d);                                                            //On vérifie et récupère la réponse de l'utilisateur
     
     
     for (int i = 0; i < TLC.taille; i++) {                               //Puis, pour chaque contour,  
-        printf("%d\n", i);
         Liste_Point L1 = creer_liste_Point_vide();
         Liste_Point L, L2;
         L1 = ajouter_element_liste_Point(L1, TLC.tab[i].first->data);
@@ -412,18 +411,35 @@ Bezier2 approx_bezier2(Liste_Point L, int j1, int j2) {
         B.C1.y = alpha * y + beta * (TL.tab[j1].y + TL.tab[j2].y);
     }
     else {
-        printf("ERREUR : indices dans approx_bezier2");
+        printf("ERREUR : indices dans approx_bezier2\n");
     }
     
     return B;
 }
 
+Point Point_sur_bezier2 (Bezier2 B, double t) {
+    Point Ct;
+    Ct.x = ((1-t)*(1-t))*B.C0.x + 2*t*(1-t)*B.C1.x + (t*t)*B.C2.x;
+    Ct.y = ((1-t)*(1-t))*B.C0.y + 2*t*(1-t)*B.C1.y + (t*t)*B.C2.y;
+    printf("Ct = (%lf, %lf)\n", Ct.x, Ct.y);
+    return Ct;
+}
+
+double dist_point_Bezier2 (Point P, Bezier2 B, double t) {
+    Point Ct = Point_sur_bezier2(B,t);
+	Vecteur V = vect_bipoint (P, Ct);
+	double d = norme_euclidienne(V);
+	return d;
+}
+
+
+
 int main(int argc, char *argv[]){
 
-    if (argc>2) {
-        printf("Erreur nombre d'arguments");
-        exit(999);
-    }
+    // if (argc>2) {
+    //     printf("Erreur nombre d'arguments");
+    //     exit(999);
+    // }
 
     // Image I = lire_fichier_image(argv[1]);
     // Liste_Contour LC,LC2;
@@ -431,7 +447,7 @@ int main(int argc, char *argv[]){
     // LC2 = TT_Contours_Simplifier_Douglas(LC);
     // int p = nb_points(LC2);
     // printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
-    //esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
+    // esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
 
     Point P0; P0.x = 0; P0.y = 0;
     Point P1; P1.x = 1; P1.y = 0;
@@ -453,6 +469,14 @@ int main(int argc, char *argv[]){
     L = ajouter_element_liste_Point(L, P7);
     L = ajouter_element_liste_Point(L, P8);
 
-    Bezier2 B = approx_bezier2(L,0,8);
-    printf("C1.x : %lf, C1.y : %lf\n", B.C1.x, B.C1.y);
+    double i = atol(argv[3]);
+    double t = i / (L.taille-1);
+    printf("i : %lf  ; taille : %d  ;  t : %lf\n", i, L.taille-2, t);
+    Bezier2 B = approx_bezier2(L,atol(argv[1]),atol(argv[2]));
+    printf("B : (%lf, %lf), (%lf, %lf), (%lf, %lf)\n", B.C0.x, B.C0.y, B.C1.x, B.C1.y, B.C2.x, B.C2.y);
+    Point Ct = Point_sur_bezier2(B, t);
+    printf("Ct = (%lf, %lf)\n", Ct.x, Ct.y);
+
+    double d = dist_point_Bezier2(L.first->suiv->suiv->data, B, t);
+    printf("dist : %lf\n", d);
 }

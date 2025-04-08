@@ -1,0 +1,32 @@
+#ifndef _LIST_BEZIER2_H_
+#define _LIST_BEZIER2_H_
+
+#include<stdio.h>  /* utilisation des entrees-sorties standard de C */
+#include<stdlib.h> /* utilisation des fonctions malloc et free */
+#include "conventions.h"
+
+
+typedef struct Bezier2_ {
+	Point C0;
+	Point C1;
+	Point C2;
+} Bezier2;
+
+typedef struct Cellule_Liste_Bezier2_
+{
+	Bezier2 data;    /* donnee de l'element de liste */
+	struct Cellule_Liste_Bezier2_* suiv; /* Bezier2eur sur l'element suivant */
+} Cellule_Liste_Bezier2;
+
+typedef struct Liste_Bezier2_
+{
+	unsigned int taille;        /* nombre d'elements dans la liste */
+	Cellule_Liste_Bezier2 *first; /* Bezier2eur sur le premier element de la liste */
+	Cellule_Liste_Bezier2 *last;  /* Bezier2eur sur le dernier element de la liste */
+	                       /* first = last = NULL et taille = 0 <=> liste vide */
+} Liste_Bezier2;
+
+
+Liste_Bezier2 creer_liste_Bezier2_vide();
+
+#endif 
