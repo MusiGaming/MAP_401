@@ -387,6 +387,37 @@ int nb_points(Liste_Contour LC){
     return s;
 }
 
+Bezier2 approx_bezier2(Liste_Point L, int j1, int j2) {
+    // int j1 = 0; int j2 = L.taille -1;
+    int n = j2 - j1;
+    Tableau_Point TL = sequence_points_liste_vers_tableau(L);
+    Bezier2 B;
+    B.C0 = TL.tab[j1];
+    B.C2 = TL.tab[j2];
+
+    if (n==1) {
+        B.C1.x = (1./2.)*(TL.tab[j1].x + TL.tab[j2].x);
+        B.C1.x = (1./2.)*(TL.tab[j1].y + TL.tab[j2].y);
+    }
+    else if (n >= 2) {
+        double nR = (double)n;
+        double alpha = (3*nR)/((nR*nR)-1);
+        double beta = (1-2*nR)/(2*(nR+1));
+        double x, y;
+        for(int i = 1; i <= (n-1); i++) {
+            x = x + TL.tab[i+j1].x;
+            y = y + TL.tab[i+j1].y;
+        }
+        B.C1.x = alpha * x + beta * (TL.tab[j1].x + TL.tab[j2].x); 
+        B.C1.y = alpha * y + beta * (TL.tab[j1].y + TL.tab[j2].y);
+    }
+    else {
+        printf("ERREUR : indices dans approx_bezier2");
+    }
+    
+    return B;
+}
+
 int main(int argc, char *argv[]){
 
     if (argc>2) {
@@ -394,12 +425,34 @@ int main(int argc, char *argv[]){
         exit(999);
     }
 
-    Image I = lire_fichier_image(argv[1]);
-    Liste_Contour LC,LC2;
-    LC = TT_Les_Contours(I);
-    LC2 = TT_Contours_Simplifier_Douglas(LC);
-    int p = nb_points(LC2);
-    printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
+    // Image I = lire_fichier_image(argv[1]);
+    // Liste_Contour LC,LC2;
+    // LC = TT_Les_Contours(I);
+    // LC2 = TT_Contours_Simplifier_Douglas(LC);
+    // int p = nb_points(LC2);
+    // printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
     //esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
-    
+
+    Point P0; P0.x = 0; P0.y = 0;
+    Point P1; P1.x = 1; P1.y = 0;
+    Point P2; P2.x = 1; P2.y = 1;
+    Point P3; P3.x = 1; P3.y = 2;
+    Point P4; P4.x = 2; P4.y = 2;
+    Point P5; P5.x = 3; P5.y = 2;
+    Point P6; P6.x = 3; P6.y = 3;
+    Point P7; P7.x = 4; P7.y = 3;
+    Point P8; P8.x = 5; P8.y = 3;
+    Liste_Point L = creer_liste_Point_vide();
+    L = ajouter_element_liste_Point(L, P0);
+    L = ajouter_element_liste_Point(L, P1);
+    L = ajouter_element_liste_Point(L, P2);
+    L = ajouter_element_liste_Point(L, P3);
+    L = ajouter_element_liste_Point(L, P4);
+    L = ajouter_element_liste_Point(L, P5);
+    L = ajouter_element_liste_Point(L, P6);
+    L = ajouter_element_liste_Point(L, P7);
+    L = ajouter_element_liste_Point(L, P8);
+
+    Bezier2 B = approx_bezier2(L,0,8);
+    printf("C1.x : %lf, C1.y : %lf\n", B.C1.x, B.C1.y);
 }

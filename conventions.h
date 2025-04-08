@@ -30,6 +30,11 @@ typedef struct Tableau_Point_
 	Point *tab;          /* (pointeur vers) le tableau des elements */
 } Tableau_Point;
 
+typedef struct Bezier2_ {
+   Point C0;
+   Point C1;
+   Point C2;
+} Bezier2;
 
 /* creer une cellule de liste avec l'element v 
    renvoie le pointeur sur la cellule de liste creee
