@@ -37,7 +37,7 @@ INCLUDEOPTS = -I$(INCDIR)
 COMPILOPTS = -g -Wall $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = test_image test_geometrie simplification_Bezier
+EXECUTABLES = test_image test_geometrie main
 
 
 #############################################################################
@@ -91,6 +91,13 @@ list_bezier2.o : list_bezier2.c list_bezier2.h conventions.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
+list_bezier3.o : list_bezier3.c list_bezier3.h list_bezier2.h conventions.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module list_bezier3"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
 contour.o : contour.c contour.h image.h geom2d.h conventions.h list_contour.h list_bezier2.h
 	@echo ""
 	@echo "---------------------------------------------"
@@ -98,10 +105,24 @@ contour.o : contour.c contour.h image.h geom2d.h conventions.h list_contour.h li
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-simplification_Bezier.o : simplification_Bezier.c simplification_Bezier.h contour.h image.h geom2d.h conventions.h list_contour.h list_bezier2.h
+simplification_Bezier.o : simplification_Bezier.c simplification_Bezier.h main.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module simplification_Bezier"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
+simplification_Bezier3.o : simplification_Bezier3.c simplification_Bezier3.h main.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module simplification_Bezier3"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
+main.o : main.c main.h contour.h image.h geom2d.h conventions.h list_contour.h list_bezier2.h simplification_Bezier.h list_bezier3.h simplification_Bezier3.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module main"
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
@@ -144,10 +165,24 @@ contour : image.o geom2d.o conventions.o list_contour.o list_bezier2.o contour.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -o $@
 
-simplification_Bezier : image.o geom2d.o conventions.o list_contour.o list_bezier2.o contour.o simplification_Bezier.o
+simplification_Bezier : main.o simplification_Bezier.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module simplification_Bezier"
+	@echo "---------------------------------------------"
+	$(CC) $^ $(LDOPTS) -o $@
+
+simplification_Bezier3 : main.o simplification_Bezier3.o
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module simplification_Bezier3"
+	@echo "---------------------------------------------"
+	$(CC) $^ $(LDOPTS) -o $@
+
+main : image.o geom2d.o conventions.o list_contour.o list_bezier2.o list_bezier3.o contour.o simplification_Bezier.o simplification_Bezier3.o main.o 
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module main"
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -o $@
 

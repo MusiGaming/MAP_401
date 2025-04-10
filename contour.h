@@ -33,6 +33,7 @@ Liste_Contour TT_Les_Contours(Image I);
 double dist_seg(Point A, Point B, Point P);
 
 Liste_Point simplification_douglas_peucker(Contour C, int j1, int j2, double d);
+Liste_Contour TT_Contours_Simplifier_Douglas(Liste_Contour LC);
 
 int nb_points(Liste_Contour LC);
 #endif
