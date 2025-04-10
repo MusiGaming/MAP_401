@@ -49,6 +49,7 @@ double dist_point_Bezier2 (Point P, Bezier2 B, double t) {
     Point Ct = Point_sur_bezier2(B,t);
 	Vecteur V = vect_bipoint (P, Ct);
 	double d = norme_euclidienne(V);
+    printf ("d : %lf\n", d);
 	return d;
 }
 
@@ -80,6 +81,17 @@ Liste_Bezier2 simplification_douglas_peucker_bezier2 (Liste_Point L, int j1, int
     return LB;
 }
 
+Bezier3 convertion_Bezier2_Bezier3(Bezier2 B2) {
+    Bezier3 B3;
+    B3.C0 = B2.C0;
+    B3.C3 = B2.C2;
+
+    B3.C1.x = (2*B2.C1.x + B2.C0.x)/3;
+    B3.C1.x = (2*B2.C1.y + B2.C0.y)/3;
+    B3.C2.x = (2*B2.C1.x + B2.C2.x)/3;
+    B3.C2.x = (2*B2.C1.y + B2.C2.y)/3;
+}
+
 //Permet d'écrire l'ensemble des contours dans un fichier eps pouvant être lu comme une image affichable
 void esp_fichier_Bezier2(char nom[], Liste_Bezier2 LB, UINT h, UINT l) {
     int size = strlen(nom);                                 //On récupère la taille du nom du fichier image donné en argument de la commande dans le terminal
@@ -87,16 +99,18 @@ void esp_fichier_Bezier2(char nom[], Liste_Bezier2 LB, UINT h, UINT l) {
         nom[i-1] = '\0';
     }
     nom = strcat(nom, ".eps");                              //Puis on rajoute '.eps' pour faire le nom de notre fichier image affichable
-    
+
+    double n = 100;
     FILE *file;                                             //On créer un fichier
     file = fopen(nom, "w");                                 //Avec le nom qu'on viens de créer, puis on dit qu'on veut écrire dedans
     fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");                //On écrit les deux premières lignes obligatoires du format .eps
-    fprintf(file , "%%%%BoundingBox: 0 0 %u %u\n\n", l, h);     //Avec la taille de l'image à créer (donc les mêmes que l'image donné)
+    fprintf(file , "%%%%BoundingBox: 0 0 %f %f\n\n", l*n, h*n);     //Avec la taille de l'image à créer (donc les mêmes que l'image donné)
 
     Tableau_Bezier2 TLB = sequence_Bezier2_liste_vers_tableau(LB);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
     for (int i = 0; i < TLB.taille; i++) {                               //Puis, pour chaque contour,  
-        fprintf(file, "%f %f moveto\n", TLB.tab[i].C0.x, h-TLB.tab[i].C0.y);        //Dit au stylo de se déplacer au 1er point
-        fprintf(file, "%f %f %f %f %f %fcurveto\n", TLB.tab[i].C1.x, h-TLB.tab[i].C1.y, TLB.tab[i].C2.x, h-TLB.tab[i].C2.y, TLB.tab[i].C2.x, h-TLB.tab[i].C2.y);
+        Bezier3 B3 = convertion_Bezier2_Bezier3(TLB.tab[i]);
+        fprintf(file, "%u %u moveto\n", B3.C0.x, B3.C0.y);        //Dit au stylo de se déplacer au 1er point
+        fprintf(file, "%f %f %f %f %f %f curveto\n", B3.C1.x*n, B3.C1.y*n, B3.C2.x*n, B3.C2.y*n, B3.C3.x*n, B3.C3.y*n);
     }    
 
     printf("Quel mode pour le remplissage ? (0 = vide, 1 = fill)\n");   //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
@@ -113,7 +127,15 @@ void esp_fichier_Bezier2(char nom[], Liste_Bezier2 LB, UINT h, UINT l) {
     fclose(file);                                                       //On ferme le fichier qui est près à l'emplois
 }
 
-
+Liste_Bezier2 TT_contour_en_Bezier2(Liste_Contour LC) {
+    Tableau_Contour TLC = sequence_Contours_liste_vers_tableau(LC);
+    Liste_Bezier2 LB = creer_liste_bezier2_vide();
+    for (int i = 0; i <= LC.taille; i++) {
+        Bezier2 B = approx_bezier2(TLC.tab[i], 0, TLC.tab[i].taille-1);
+        LB = ajouter_element_liste_Bezier2(LB, B);
+    }
+    return LB;
+}
 
 
 int main(int argc, char *argv[]){
@@ -127,9 +149,10 @@ int main(int argc, char *argv[]){
     // Liste_Contour LC,LC2;
     // LC = TT_Les_Contours(I);
     // LC2 = TT_Contours_Simplifier_Douglas(LC);
-    // int p = nb_points(LC2);
-    // printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
     // esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
+
+    // Liste_Bezier2 LB = TT_contour_en_Bezier2(LC2);
+    // Liste_Bezier2 LB2 = simplification_douglas_peucker_bezier2 (LC2, atol(argv[1]), atol(argv[2]), atol(argv[3]));
 
     Point P0; P0.x = 0; P0.y = 0;
     Point P1; P1.x = 1; P1.y = 0;
@@ -164,4 +187,6 @@ int main(int argc, char *argv[]){
 
     Liste_Bezier2 LB = simplification_douglas_peucker_bezier2 (L, atol(argv[1]), atol(argv[2]), atol(argv[3]));
     ecrire_Liste_Bezier(LB);
+    char txt[] = "test2.txt";
+    esp_fichier_Bezier2(txt, LB, 3, 5);
 }

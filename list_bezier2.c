@@ -84,6 +84,7 @@ Tableau_Bezier2 sequence_Bezier2_liste_vers_tableau(Liste_Bezier2 L)
 	return T;
 }
 
+
 void ecrire_Liste_Bezier(Liste_Bezier2 L)
 {
 	Tableau_Bezier2 TP = sequence_Bezier2_liste_vers_tableau(L);
@@ -94,7 +95,7 @@ void ecrire_Liste_Bezier(Liste_Bezier2 L)
 	for (k = 0; k < nP; k++)
 	{	
 		Bezier2 P = TP.tab[k]; /* recuperer le point d'indice k */
-		printf(" ((%5.1f,%5.1f), (%5.1f,%5.1f), (%5.1f,%5.1f))", P.C0.x, P.C0.y, P.C1.x, P.C1.y, P.C2.x, P.C2.y);
+		printf(" ((%f,%f), (%f,%f), (%f,%f))", P.C0.x, P.C0.y, P.C1.x, P.C1.y, P.C2.x, P.C2.y);
 	} 
 	printf("]\n");
 	

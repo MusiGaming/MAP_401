@@ -12,6 +12,13 @@ typedef struct Bezier2_ {
 	Point C2;
 } Bezier2;
 
+typedef struct Bezier3_ {
+	Point C0;
+	Point C1;
+	Point C2;
+	Point C3;
+} Bezier3;
+
 typedef struct Cellule_Liste_Bezier2_
 {
 	Bezier2 data;    /* donnee de l'element de liste */
@@ -31,6 +38,27 @@ typedef struct Tableau_Bezier2_
 	unsigned int taille; /* nombre d'elements dans le tableau */
 	Bezier2 *tab;          /* (pointeur vers) le tableau des elements */
 } Tableau_Bezier2;
+
+/*---- le type liste de Bezier2 ----*/
+// typedef struct Cellule_L_Liste_Bezier2_
+// {
+// 	Liste_Bezier2 data;    /* donnee de l'element de L_Liste */
+// 	struct Cellule_L_Liste_Bezier2_* suiv; /* Bezier2eur sur l'element suivant */
+// } Cellule_L_Liste_Bezier2;
+
+// typedef struct L_Liste_Bezier2_
+// {
+// 	unsigned int taille;        /* nombre d'elements dans la L_Liste */
+// 	Cellule_L_Liste_Bezier2 *first; /* Bezier2eur sur le premier element de la L_Liste */
+// 	Cellule_L_Liste_Bezier2 *last;  /* Bezier2eur sur le dernier element de la L_Liste */
+// 	                       /* first = last = NULL et taille = 0 <=> L_Liste vide */
+// } L_Liste_Bezier2;
+
+// typedef struct Tableau_Bezier2_
+// {
+// 	unsigned int taille; /* nombre d'elements dans le tableau */
+// 	Bezier2 *tab;          /* (pointeur vers) le tableau des elements */
+// } Tableau_Bezier2;
 
 Liste_Bezier2 creer_liste_bezier2_vide();
 Cellule_Liste_Bezier2 *creer_element_liste_Bezier2(Bezier2 v);
