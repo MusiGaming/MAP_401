@@ -386,19 +386,3 @@ int nb_points(Liste_Contour LC){
     return s;
 }
 
-
-// int main(int argc, char *argv[]){
-
-//     if (argc>2) {
-//         printf("Erreur nombre d'arguments");
-//         exit(999);
-//     }
-
-//     Image I = lire_fichier_image(argv[1]);
-//     Liste_Contour LC,LC2;
-//     LC = TT_Les_Contours(I);
-//     LC2 = TT_Contours_Simplifier_Douglas(LC);
-//     int p = nb_points(LC2);
-//     printf("AAAAAAAAAAAAAH %d\n", (p-LC2.taille));
-//     esp_fichier_tt_contours(argv[1], LC2, hauteur_image(I), largeur_image(I));
-// }

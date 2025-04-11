@@ -7,36 +7,26 @@
 
 
 Bezier2 approx_bezier2(Liste_Point L, int j1, int j2) {
-    Tableau_Point C = sequence_points_liste_vers_tableau(L);
+    Tableau_Point T = sequence_points_liste_vers_tableau(L);
     Bezier2 B;
-    Point P1 = C.tab[j1];
-    Point P2 = C.tab[j2];
-    double n = j2 - j1;
-    B.C0 =  P1;
-    B.C2 = P2 ;
-    double Cx,Cy;
-    
+    B.C0 = T.tab[j1]; B.C2 = T.tab[j2];
+    double Tx, Ty, n = j2 - j1;    
 
-    if (n == 1 ){
-        Cx = (P1.x + P2.x)/2.;
-        Cy = (P1.y + P2.y)/2.;
-        B.C1 = set_point(Cx,Cy);
-    }
-    else {
-        
-        double a = 3 * n / (pow(n,2)-1);
-        double b = (1 - 2* n )/ (2*(n+1));
+    if (n == 1) {
+        Tx = (B.C0.x + B.C2.x)/2.;
+        Ty = (B.C0.y + B.C2.y)/2.;
+        B.C1 = set_point(Tx,Ty);
+    } else {
+        double alpha = 3 * n / ((n*n)-1);
+        double beta = (1 - 2*n) / (2*(n+1));
         Point P;
-        P.x = 0;
-        P.y = 0;
+        P.x = 0; P.y = 0;
         for (int i = 1 ; i <= n-1; i++){
-
-            P = add_point(P, C.tab[i + j1]);
+            P = add_point(P, T.tab[i + j1]);
         }
-        Cx = P.x * a + b * (P1.x + P2.x);
-        Cy = P.y * a + b * (P1.y + P2.y);
-        B.C1 = set_point(Cx, Cy);
-        
+        Tx = P.x * alpha + beta * (B.C0.x + B.C2.x);
+        Ty = P.y * alpha + beta * (B.C0.y + B.C2.y);
+        B.C1 = set_point(Tx, Ty);
     }
     return B;
 }
@@ -58,29 +48,24 @@ double dist_point_Bezier2 (Point P, Bezier2 B, double t) {
 }
 
 Liste_Bezier2 simplification_douglas_peucker_bezier2 (Liste_Point LP, int j1, int j2, double d) {
-    Tableau_Point CONT = sequence_points_liste_vers_tableau(LP);
-    double n = j2-j1;
+    Tableau_Point TP = sequence_points_liste_vers_tableau(LP);
+    double dmax = 0, n = j2-j1;
+    int k = j1;
     
-    Liste_Bezier2 L,L1,L2;
-
+    Liste_Bezier2 L  = creer_liste_bezier2_vide();
+	Liste_Bezier2 L1 = creer_liste_bezier2_vide();
+	Liste_Bezier2 L2 = creer_liste_bezier2_vide();
 	Bezier2 C = approx_bezier2 (LP,j1,j2);
     
-    double dmax = 0;
-    int k = j1;
     for (int j=j1+1; j<=j2 ; j++){
 		double i=j-j1;
 		double ti = i/n;
-        Point P = CONT.tab[j];
-        double dj = dist_point_Bezier2(P, C, ti);
-        if ( dmax<dj) {
+        double dj = dist_point_Bezier2(TP.tab[j], C, ti);
+        if (dmax<dj) {
             dmax = dj;
             k=j;
         }
     }
-    
-    L  = creer_liste_bezier2_vide();
-	L1 = creer_liste_bezier2_vide();
-	L2 = creer_liste_bezier2_vide();
     
     if (dmax <= d){
         L = ajouter_element_liste_Bezier2(L,C);
@@ -93,14 +78,14 @@ Liste_Bezier2 simplification_douglas_peucker_bezier2 (Liste_Point LP, int j1, in
 }
 
 Bezier3 convertion_Bezier2_Bezier3(Bezier2 B2) {
-    Bezier3 b3;
-    b3.C0=B2.C0;
-    b3.C1.x=(2*(B2.C1.x)+B2.C0.x)/3;
-    b3.C1.y=(2*(B2.C1.y)+B2.C0.y)/3;
-    b3.C2.x=(2*(B2.C1.x)+B2.C2.x)/3;
-    b3.C2.y=(2*(B2.C1.y)+B2.C2.y)/3;
-    b3.C3=B2.C2;
-    return  b3;
+    Bezier3 B3;
+    B3.C0=B2.C0;
+    B3.C3=B2.C2;
+    B3.C1.x=(2*(B2.C1.x)+B2.C0.x)/3;
+    B3.C1.y=(2*(B2.C1.y)+B2.C0.y)/3;
+    B3.C2.x=(2*(B2.C1.x)+B2.C2.x)/3;
+    B3.C2.y=(2*(B2.C1.y)+B2.C2.y)/3;
+    return  B3;
 }
 
 //Permet d'écrire l'ensemble des contours dans un fichier eps pouvant être lu comme une image affichable
@@ -108,6 +93,7 @@ void esp_fichier_Bezier2(char nom[], Liste_Liste_Bezier2 LLB, UINT h, UINT l) {
     Tableau_Liste_Bezier2 TLLB = sequence_Bezier2_liste_liste_vers_tableau(LLB);
     Tableau_Bezier2 TLB;
     Bezier3 B3;
+
     int size = strlen(nom);                                 //On récupère la taille du nom du fichier image donné en argument de la commande dans le terminal
     for(int i = size; i > (size - 4); i--) {                //On lui retire son extention '.pbm'
         nom[i-1] = '\0';
@@ -119,8 +105,8 @@ void esp_fichier_Bezier2(char nom[], Liste_Liste_Bezier2 LLB, UINT h, UINT l) {
     fprintf(file, "%%!PS-Adobe-3.0 EPSF-3.0\n");                //On écrit les deux premières lignes obligatoires du format .eps
     fprintf(file , "%%%%BoundingBox: 0 0 %d %d\n\n", l, h);     //Avec la taille de l'image à créer (donc les mêmes que l'image donné)
     printf("taille LLB : %d\n",LLB.taille);
+
     for (int k = 0; k<LLB.taille;k++) {
-        printf("k:%d\n",k);
         TLB = sequence_Bezier2_liste_vers_tableau(TLLB.tab[k]);      //On transforme notre liste de contour en tableau pour une manipulation plus simple
 
         B3 = convertion_Bezier2_Bezier3(TLB.tab[0]);
@@ -131,7 +117,6 @@ void esp_fichier_Bezier2(char nom[], Liste_Liste_Bezier2 LLB, UINT h, UINT l) {
         }
     }
         
-
     printf("Quel mode pour le remplissage ? (0 = vide, 1 = fill)\n");   //On demande à l'utilisateur si il désire que l'image soit rempli ou vide
     int mode = 0;
     scanf("%d", &mode);                                                 //On vérifie et récupère la réponse de l'utilisateur
@@ -155,7 +140,6 @@ Liste_Liste_Bezier2 TT_contour_en_Bezier2(Liste_Contour LC) {
     scanf("%lf", &d);
 
     for (int i = 0; i <= LC.taille-1; i++) {
-
         Liste_Bezier2 LB2 = simplification_douglas_peucker_bezier2(TLC.tab[i],0, TLC.tab[i].taille -1, d);
         LB = ajouter_element_liste_liste_Bezier2(LB, LB2);
     }

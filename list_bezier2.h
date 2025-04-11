@@ -73,25 +73,4 @@ Cellule_Liste_Liste_Bezier2 *creer_element_liste_liste_Bezier2(Liste_Bezier2 v);
 Liste_Liste_Bezier2 ajouter_element_liste_liste_Bezier2(Liste_Liste_Bezier2 L, Liste_Bezier2 e);
 Tableau_Liste_Bezier2 sequence_Bezier2_liste_liste_vers_tableau(Liste_Liste_Bezier2 L);
 
-
-typedef struct Cellule_Liste_Bezier3_
-{
-	Bezier3 data;   /* Courbe */ 
-	struct Cellule_Liste_Bezier3_* suiv; /* pointeur sur l'element suivant */
-} Cellule_Liste_Bezier3;
-
-/*---- le type liste de point ----*/
-typedef struct Liste_Bezier3_
-{
-	unsigned int taille;        /* nombre d'elements dans la liste */
-	Cellule_Liste_Bezier3 *first; /* pointeur sur le premier element de la liste */
-	Cellule_Liste_Bezier3 *last;  /* pointeur sur le dernier element de la liste */
-	                       /* first = last = NULL et taille = 0 <=> liste vide */
-} Liste_Bezier3;
-
-typedef struct Tableau_Bezier3_
-{
-	unsigned int taille; /* nombre d'elements dans le tableau */
-	Bezier3 *tab;          /* (pointeur vers) le tableau des elements */
-} Tableau_Bezier3;
 #endif 

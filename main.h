@@ -6,6 +6,7 @@
 #include "conventions.h"
 #include "list_contour.h"
 #include "list_bezier2.h"
+#include "list_bezier3.h"
 #include "contour.h"
 #include "simplification_Bezier.h"
 #include "simplification_Bezier3.h"

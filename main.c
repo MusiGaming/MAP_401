@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
     LC = TT_Les_Contours(I);
     LC2 = TT_Contours_Simplifier_Douglas(LC);
 
-    Liste_Liste_Bezier2 LB = TT_contour_en_Bezier2(LC2);
+    Liste_Liste_Bezier3 LB = TT_contour_en_Bezier3(LC2);
 
-    esp_fichier_Bezier2(argv[1], LB, hauteur_image(I), largeur_image(I));
+    esp_fichier_Bezier3(argv[1], LB, hauteur_image(I), largeur_image(I));
 }
